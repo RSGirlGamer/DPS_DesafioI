@@ -105,10 +105,35 @@ function showCart() {
     modalBody.innerHTML += `
         <div class="cart-total">
             <h5>Total: $${total.toFixed(2)}</h5>
-            <button class="btn btn-primary">Pagar</button>
+            <div id="paypal-button-container"></div>
         </div>`;
 
     modal.style.display = "block";
+
+    // Renderizar el botón de PayPal
+    paypal.Buttons({
+        createOrder: function (data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: total.toFixed(2)
+                    }
+                }]
+            });
+        },
+        onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+                alert('Pago realizado por ' + details.payer.name.given_name);
+                cart = [];
+                updateCartCount();
+                showCart();
+            });
+        },
+        onError: function (err) {
+            console.error('Error en el pago:', err);
+        }
+    }).render('#paypal-button-container');
+
 }
 
 // Evento para abrir el modal del carrito

@@ -10887,3 +10887,12 @@ textarea.form-control-lg {
   margin-top: 20px;
   text-align: right;
 }
+#paypal-button-container {
+  display: flex;
+  justify-content: center; 
+  margin-top: 20px; 
+}
+
+.cart-total {
+  text-align: left; 
+}

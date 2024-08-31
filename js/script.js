@@ -105,8 +105,8 @@ function showCart() {
         total += product.price * product.quantity;
         return `
             <div class="cart-item">
-                <img src="${product.image}" alt="${product.title}" class="cart-item-image">
-                <div class="cart-item-details">
+                <img src="${product.image}" alt="${product.title}" class="cart-item-image px-2">
+                <div class="cart-item-details px-3 py-2">
                     <h5>${product.title}</h5>
                     <p>Cantidad: ${product.quantity}</p>
                     <p>Precio: $${product.price.toFixed(2)}</p>
@@ -119,7 +119,6 @@ function showCart() {
             <h5>Total: $${total.toFixed(2)}</h5>
             <div id="paypal-button-container"></div>
         </div>`;
-
     modal.style.display = "block";
 
     // Renderizar el botón de PayPal
@@ -149,11 +148,10 @@ function showCart() {
 }
 
 // Evento para abrir el modal del carrito
-document.querySelector('.btn-outline-dark').addEventListener('click', (event) => {
+document.querySelector('#open-cart-modal').addEventListener('click', (event) => {
     event.preventDefault();
     showCart();
 });
-
 // Evnto para cerrar el modal cuando se hace clic en el botón de cerrar
 document.querySelector('.close').addEventListener('click', () => {
     document.querySelector('#cart-modal').style.display = "none";

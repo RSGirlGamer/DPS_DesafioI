@@ -4,9 +4,18 @@ import { fetchProducts, fetchSingleProduct, fetchCategories, fetcProdByCat } fro
 document.addEventListener('DOMContentLoaded', () => {
     showProducts();
     showCategories();
+    loadMain();
 });
 
 let cart = [];
+
+async function loadMain(){
+    console.log("algo")
+    document.querySelector("#onlineShop").addEventListener("click",(event)=>{
+        event.preventDefault();
+        showProducts();
+    })
+}
 
 function addToCart(product) {
     const existingProduct = cart.find(item => item.id === product.id);

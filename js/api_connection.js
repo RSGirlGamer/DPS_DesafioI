@@ -11,7 +11,8 @@ export async function fetchSingleProduct(id){
 
 export async function fetchCategories(){
     let data = await fetch (constantes.API_ENDPOINT+constantes.METHODS.GET_CATEGORIES);
-    let response = await data.json();  
+    let response = await data.json();
+    console.log(`Categorias retornadas: ${response}`);
     return response;
 }
 

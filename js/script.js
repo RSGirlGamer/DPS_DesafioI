@@ -54,12 +54,15 @@ async function showCategories() {
     const categoriesSelect = document.querySelector('#categories');
     const categorias = await fetchCategories();
 
-    categoriesSelect.innerHTML = categorias.map(categoria => `
-        <li><a class="dropdown-item" href="#" onclick="filterByCategory('${categoria}')">${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</a></li>`
-    ).join('');
+    categoriesSelect.innerHTML = categorias.map(categoria => {
+        const cat = encodeURIComponent(categoria);
+        return `<li><a class="dropdown-item" href="#" onclick="filterByCategory(&quot;${cat}&quot;)">${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</a></li>`;
+    }).join('');
 }
 
+
 async function filterByCategory(category) {
+    console.log(`Categoria enviada para filtrar: ${category}`);
     const productCards = document.querySelector('#container-cards');
     const productos = await fetcProdByCat(category);
 

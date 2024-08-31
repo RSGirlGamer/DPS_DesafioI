@@ -55,11 +55,13 @@ async function showCategories() {
     const categorias = await fetchCategories();
 
     categoriesSelect.innerHTML = categorias.map(categoria => `
-        <li><a class="dropdown-item" href="#" onclick="filterByCategory('${categoria}')">${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</a></li>`
-    ).join('');
+        <li><a class="dropdown-item" href="#" onclick="filterByCategory('${categoria}')">${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</a></li>`)
+        .join('');
+        console.log(categorias);
 }
 
 async function filterByCategory(category) {
+    console.log(category)
     const productCards = document.querySelector('#container-cards');
     const productos = await fetcProdByCat(category);
 

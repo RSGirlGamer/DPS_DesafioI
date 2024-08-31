@@ -597,6 +597,16 @@ progress {
   content: "— ";
 }
 
+img {
+  transition: transform 0.3s ease-in-out;
+  /* Ajusta el tiempo y la curva de la transición según tus necesidades */
+}
+
+/* Estilo al hacer hover sobre la imagen */
+img:hover {
+  transform: scale(1.1);
+}
+
 .img-fluid {
   max-width: 100%;
   height: auto;
@@ -4276,7 +4286,7 @@ textarea.form-control-lg {
 .card-img-bottom {
   border-radius: 10%; /* Mantiene las esquinas redondeadas */
   padding: 5px; /* Espacio entre la imagen y el borde de la tarjeta */
-  height: 200px;
+  height: 300px;
   object-fit: contain;
   
 

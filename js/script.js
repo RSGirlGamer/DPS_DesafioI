@@ -38,25 +38,29 @@ async function showProducts() {
     const productCards = document.querySelector('#container-cards');
     const productos = await fetchProducts(constantes.API_ENDPOINT + constantes.METHODS.GET_ALL);
 
-    productCards.innerHTML = productos.map(producto => `
-        <div class="card mx-2 my-2">
-            <img class="card-img-top" src="${producto.image}" alt="..." />
-            <div class="card-body p-4">
-                <div class="text-center">
-                    <h5 class="fw-bolder">${producto.title}</h5>                                    
+    productCards.innerHTML = productos.map(producto => {
+        const cleanProductTitle = producto.title.replace(/'/g, "\\'");
+    
+        return `
+            <div class="card mx-2 my-2">
+                <img class="card-img-top" src="${producto.image}" alt="..." />
+                <div class="card-body p-4">
+                    <div class="text-center">
+                        <h5 class="fw-bolder">${producto.title}</h5>                                    
+                    </div>
+                    <div class="text-center">
+                        $${producto.price.toFixed(2)}
+                    </div>
                 </div>
-                <div class="text-center">
-                    $${producto.price.toFixed(2)}
+                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                    <div class="text-center">
+                        <button class="btn btn-outline-dark mt-auto" onclick="addToCart({id: ${producto.id}, title: '${cleanProductTitle}', price: ${producto.price}, image: '${producto.image}'})">
+                            Comprar
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                <div class="text-center">
-                    <button class="btn btn-outline-dark mt-auto" onclick="addToCart({id: ${producto.id}, title: '${producto.title}', price: ${producto.price}, image: '${producto.image}'})">
-                        Comprar
-                    </button>
-                </div>
-            </div>
-        </div>`).join('');
+            </div>`;
+    }).join('');
 }
 
 async function showCategories() {

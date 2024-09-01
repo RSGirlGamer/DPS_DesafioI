@@ -1,5 +1,6 @@
 import { constantes } from "./constantes.js";
 import { fetchProducts, fetchSingleProduct, fetchCategories, fetcProdByCat } from "./api_connection.js";
+/* import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11'; */
 
 document.addEventListener('DOMContentLoaded', () => {
     showProducts();
@@ -19,13 +20,32 @@ async function loadMain(){
 
 function addToCart(product) {
     const existingProduct = cart.find(item => item.id === product.id);
-
+    console.log(product.id)
+    console.log(product.title)
+    Swal.fire({
+        title: `Quiere agregar el producto ${product.title} al carrito?`,
+        imageUrl: `${product.image}`,
+        imageWidth: 100, // Ancho de la imagen
+        imageHeight: 100, // Altura de la imagen
+        showCancelButton: true,
+        confirmButtonColor: "#a5dc86",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, agregar!"
+}).then((result) => {
+  if (result.isConfirmed) {
     if (existingProduct) {
         existingProduct.quantity += 1;
     } else {
         cart.push({ ...product, quantity: 1 });
     }
     updateCartCount();
+    Swal.fire({
+      title: "Exito!",
+      text: "Tu producto ha sido agregado al carrito",
+      icon: "success"
+    });
+  }
+});
 }
 
 function updateCartCount() {

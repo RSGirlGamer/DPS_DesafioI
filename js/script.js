@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 let cart = [];
 
 async function loadMain(){
-    console.log("algo")
     document.querySelector("#onlineShop").addEventListener("click",(event)=>{
         event.preventDefault();
         showProducts();
@@ -46,6 +45,42 @@ function addToCart(product) {
     });
   }
 });
+}
+
+
+
+function updateInput(name, quantity){
+    document.getElementById("input" + name).value = quantity;
+}
+
+function changeQuantity(product, fun) {
+    if(fun == "add") {
+        addToCart(product)
+    }
+    if(fun == "substract") {
+        deleteToCart(product)
+    }
+    const existingProduct = cart.find(item => item.id === product.id);
+    if(existingProduct) {
+        updateInput(product.id, existingProduct.quantity)
+    }
+    if(cart.length == 0) {
+        document.querySelector('#cart-modal').style.display = "none";
+    }
+
+}
+
+function deleteToCart(product) {
+    const existingProduct = cart.find(item => item.id === product.id);
+
+    if (existingProduct.quantity > 1) {
+        existingProduct.quantity -= 1;
+    } else {
+        const index = cart.findIndex(item => item.id === product.id);
+        cart.splice(index, 1)
+        document.querySelector('#carditem' + product.id).style.display = "none";
+    }
+    updateCartCount();
 }
 
 function updateCartCount() {
@@ -128,19 +163,26 @@ function showCart() {
     modalBody.innerHTML = cart.map(product => {
         total += product.price * product.quantity;
         return `
-            <div class="cart-item">
+            <div class="cart-item" id="carditem${product.id}">
                 <img src="${product.image}" alt="${product.title}" class="cart-item-image px-2">
                 <div class="cart-item-details px-3 py-2">
                     <h5>${product.title}</h5>
-                    <p>Cantidad: ${product.quantity}</p>
                     <p>Precio: $${product.price.toFixed(2)}</p>
+                    <div class="input-group mb-3">
+                        <button class="input-group-text" onclick="changeQuantity({id: ${product.id}, title: '${product.title}', price: ${product.price}, image: '${product.image}'}, 'add')">+</button>
+                            <input type="text" class="form-control" id="input${product.id}" value="${product.quantity}" disabled aria-label="Amount (to the nearest dollar)">
+                        <button class="input-group-text" onclick="changeQuantity({id: ${product.id}, title: '${product.title}', price: ${product.price}, image: '${product.image}'}, 'substract')">-</button>
+                    </div>
                 </div>
             </div>`;
     }).join('');
-
+    let iva = total * 0.13;
+    let finalTotal = total + iva;
     modalBody.innerHTML += `
         <div class="cart-total">
-            <h5>Total: $${total.toFixed(2)}</h5>
+            <h5>Subtotal: $${total.toFixed(2)}</h5>
+            <h5>IVA: $${iva.toFixed(2)}</h5>
+            <h5>Total: $${finalTotal.toFixed(2)}</h5>
             <div id="paypal-button-container"></div>
         </div>`;
     modal.style.display = "block";
@@ -151,7 +193,7 @@ function showCart() {
             return actions.order.create({
                 purchase_units: [{
                     amount: {
-                        value: total.toFixed(2)
+                        value: finalTotal.toFixed(2)
                     }
                 }]
             });
@@ -159,9 +201,7 @@ function showCart() {
         onApprove: function (data, actions) {
             return actions.order.capture().then(function (details) {
                 alert('Pago realizado por ' + details.payer.name.given_name);
-                cart = [];
-                updateCartCount();
-                showCart();
+                showPurchase();
             });
         },
         onError: function (err) {
@@ -169,6 +209,44 @@ function showCart() {
         }
     }).render('#paypal-button-container');
 
+}
+
+function showPurchase() {
+    document.querySelector('#cart-modal').style.display = "none";
+    const modalBody = document.querySelector('#purchase-modal-body');
+    const modal = document.querySelector('#purchase-modal');
+    let total = 0;
+
+    modalBody.innerHTML = cart.map(product => {
+        let price = product.price * product.quantity
+        total += price;
+        return `
+            <div class="row">
+                <div class="col">
+                    <p>${product.title}</p>
+                </div>
+                <div class="col">
+                    <p>${product.quantity}</p>
+                </div>
+                <div class="col">
+                    <p>$${product.price.toFixed(2)}</p>
+                </div>
+                <div class="col">
+                    <p>$${price.toFixed(2)}</p>
+                </div>
+            </div>`;
+    }).join('');
+    let iva = total * 0.13;
+    let finalTotal = total + iva;
+    modalBody.innerHTML += `
+        <div class="cart-total">
+            <h5>Subtotal: $${total.toFixed(2)}</h5>
+            <h5>IVA: $${iva.toFixed(2)}</h5>
+            <h5>Total: $${finalTotal.toFixed(2)}</h5>
+        </div>`;
+    modal.style.display = "block";
+    cart = []
+    updateCartCount()
 }
 
 // Evento para abrir el modal del carrito
@@ -181,9 +259,21 @@ document.querySelector('.close').addEventListener('click', () => {
     document.querySelector('#cart-modal').style.display = "none";
 });
 
+// Evnto para cerrar el modal cuando se hace clic en el botón de cerrar
+document.querySelector('.close').addEventListener('click', () => {
+    document.querySelector('#purchase-modal').style.display = "none";
+});
+
 // Event listener para cerrar el modal cuando se hace clic fuera del modal
 window.addEventListener('click', (event) => {
     const modal = document.querySelector('#cart-modal');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+});
+
+window.addEventListener('click', (event) => {
+    const modal = document.querySelector('#purchase-modal');
     if (event.target == modal) {
         modal.style.display = "none";
     }
@@ -193,3 +283,5 @@ window.addEventListener('click', (event) => {
 window.addToCart = addToCart;
 window.showCart = showCart;
 window.filterByCategory = filterByCategory;
+window.deleteToCart = deleteToCart;
+window.changeQuantity = changeQuantity;

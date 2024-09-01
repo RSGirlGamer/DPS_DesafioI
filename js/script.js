@@ -19,54 +19,65 @@ async function loadMain(){
 
 function addToCart(product) {
     const existingProduct = cart.find(item => item.id === product.id);
-    console.log(product.id)
-    console.log(product.title)
+    if (existingProduct) {
+        existingProduct.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
     Swal.fire({
         title: `Quiere agregar el producto ${product.title} al carrito?`,
         imageUrl: `${product.image}`,
-        imageWidth: 100, // Ancho de la imagen
-        imageHeight: 100, // Altura de la imagen
+        imageWidth: 100, 
+        imageHeight: 100, 
         showCancelButton: true,
         confirmButtonColor: "#a5dc86",
         cancelButtonColor: "#d33",
         confirmButtonText: "Si, agregar!"
 }).then((result) => {
   if (result.isConfirmed) {
-    if (existingProduct) {
-        existingProduct.quantity += 1;
-    } else {
-        cart.push({ ...product, quantity: 1 });
-    }
-    updateCartCount();
     Swal.fire({
       title: "Exito!",
       text: "Tu producto ha sido agregado al carrito",
       icon: "success"
     });
+    updateCartCount();
   }
 });
 }
 
-
+function simpleAddToCart(product) {
+    const existingProduct = cart.find(item => item.id === product.id);
+    if (existingProduct) {
+        existingProduct.quantity += 1;
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+    updateCartCount();;
+}
 
 function updateInput(name, quantity){
-    document.getElementById("input" + name).value = quantity;
+    
+    const input= document.getElementById("input" + name);
+    if(input){
+        input.value=quantity;
+    }  
 }
 
 function changeQuantity(product, fun) {
     if(fun == "add") {
-        addToCart(product)
+        simpleAddToCart(product);
     }
     if(fun == "substract") {
-        deleteToCart(product)
+        deleteToCart(product);
     }
-    const existingProduct = cart.find(item => item.id === product.id);
+/*     const existingProduct = cart.find(item => item.id === product.id);
     if(existingProduct) {
         updateInput(product.id, existingProduct.quantity)
     }
     if(cart.length == 0) {
         document.querySelector('#cart-modal').style.display = "none";
-    }
+    } */
+        showCart();
 
 }
 
@@ -81,6 +92,7 @@ function deleteToCart(product) {
         document.querySelector('#carditem' + product.id).style.display = "none";
     }
     updateCartCount();
+    showCart();
 }
 
 function updateCartCount() {
@@ -168,10 +180,14 @@ function showCart() {
                 <div class="cart-item-details px-3 py-2">
                     <h5>${product.title}</h5>
                     <p>Precio: $${product.price.toFixed(2)}</p>
-                    <div class="input-group mb-3">
-                        <button class="input-group-text" onclick="changeQuantity({id: ${product.id}, title: '${product.title}', price: ${product.price}, image: '${product.image}'}, 'add')">+</button>
-                            <input type="text" class="form-control" id="input${product.id}" value="${product.quantity}" disabled aria-label="Amount (to the nearest dollar)">
-                        <button class="input-group-text" onclick="changeQuantity({id: ${product.id}, title: '${product.title}', price: ${product.price}, image: '${product.image}'}, 'substract')">-</button>
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="input-group mb-3">
+                                <button class="input-group-text" onclick="changeQuantity({id: ${product.id}, title: '${product.title}', price: ${product.price}, image: '${product.image}'}, 'substract')">&minus;</button>
+                                    <input type="text" class="form-control" id="input${product.id}" value="${product.quantity}" disabled aria-label="Amount (to the nearest dollar)" style= "width: 50px">
+                                <button class="input-group-text" onclick="changeQuantity({id: ${product.id}, title: '${product.title}', price: ${product.price}, image: '${product.image}'}, 'add')">&plus;</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>`;
